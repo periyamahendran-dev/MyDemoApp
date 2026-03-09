@@ -1,0 +1,209 @@
+<template>
+    <div class="page-wrapper">
+        <!-- Decorative Mascot Backgrounds -->
+        <img src={mascotAstroUrl} alt="" class="mascot mascot-astro" aria-hidden="true">
+        <img src={mascotCodeyUrl} alt="" class="mascot mascot-codey" aria-hidden="true">
+        <img src={mascotEinsteinUrl} alt="" class="mascot mascot-einstein" aria-hidden="true">
+
+        <lightning-card icon-name="standard:currency">
+            <h1 slot="title" class="slds-text-heading_medium card-title">Currency Converter</h1>
+            <lightning-tabset variant="scoped">
+
+                <!-- Converter Tab -->
+                <lightning-tab label="Converter" icon-name="utility:currency_input">
+                    <div class="slds-var-p-around_medium">
+                        <div class="slds-grid slds-gutters slds-wrap converter-section">
+                            <!-- Amount Input -->
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-bottom_small">
+                                <lightning-input
+                                    type="number"
+                                    label="Amount"
+                                    value={amount}
+                                    placeholder="Enter amount"
+                                    min="0.01"
+                                    step="0.01"
+                                    formatter="decimal"
+                                    onchange={handleAmountChange}
+                                    required
+                                ></lightning-input>
+                            </div>
+
+                            <!-- From Currency -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-var-p-bottom_small">
+                                <lightning-combobox
+                                    label="From"
+                                    value={fromCurrency}
+                                    options={currencyOptions}
+                                    placeholder="Select currency"
+                                    onchange={handleFromCurrencyChange}
+                                    required
+                                ></lightning-combobox>
+                            </div>
+
+                            <!-- Swap Button -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-var-p-bottom_small swap-container">
+                                <lightning-button-icon
+                                    icon-name="utility:swap"
+                                    alternative-text="Swap currencies"
+                                    title="Swap currencies"
+                                    variant="brand"
+                                    size="medium"
+                                    onclick={handleSwap}
+                                    class="swap-button"
+                                ></lightning-button-icon>
+                            </div>
+
+                            <!-- To Currency -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-var-p-bottom_small">
+                                <lightning-combobox
+                                    label="To"
+                                    value={toCurrency}
+                                    options={currencyOptions}
+                                    placeholder="Select currency"
+                                    onchange={handleToCurrencyChange}
+                                    required
+                                ></lightning-combobox>
+                            </div>
+
+                            <!-- Rate Provider Selector -->
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-top_x-small slds-var-p-bottom_small">
+                                <lightning-radio-group
+                                    label="Exchange Rate Provider"
+                                    name="rateProvider"
+                                    type="button"
+                                    options={providerOptions}
+                                    value={selectedProvider}
+                                    onchange={handleProviderChange}
+                                ></lightning-radio-group>
+                            </div>
+
+                            <!-- Rate Preview -->
+                            <template lwc:if={showRatePreview}>
+                                <div class="slds-col slds-size_1-of-1 slds-var-p-top_x-small rate-preview">
+                                    <template lwc:if={isLoadingRate}>
+                                        <lightning-spinner alternative-text="Fetching rate..." size="small"></lightning-spinner>
+                                    </template>
+                                    <template lwc:elseif={previewRate}>
+                                        <p class="slds-text-body_regular slds-text-align_center rate-preview-text">
+                                            1 {fromCurrency} = {formattedPreviewRate} {toCurrency}
+                                            <span class="slds-text-color_weak"> via {selectedProviderLabel}</span>
+                                        </p>
+                                    </template>
+                                    <template lwc:elseif={previewError}>
+                                        <p class="slds-text-body_small slds-text-color_error slds-text-align_center">
+                                            Rate unavailable for this pair
+                                        </p>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Convert Button -->
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-top_small">
+                                <lightning-button
+                                    label="Convert"
+                                    variant="brand"
+                                    onclick={handleConvert}
+                                    disabled={isConvertDisabled}
+                                    class="convert-button"
+                                ></lightning-button>
+                            </div>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <template lwc:if={isLoading}>
+                            <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                <lightning-spinner alternative-text="Converting..." size="medium"></lightning-spinner>
+                            </div>
+                        </template>
+
+                        <!-- Result Display -->
+                        <template lwc:if={conversionResult}>
+                            <div class="slds-var-p-top_medium result-section">
+                                <lightning-card>
+                                    <div class="slds-var-p-around_medium slds-text-align_center">
+                                        <p class="slds-text-heading_medium result-amount">
+                                            {formattedOriginalAmount} {conversionResult.fromCurrency} =
+                                        </p>
+                                        <p class="slds-text-heading_large slds-var-p-top_xx-small converted-amount">
+                                            {formattedConvertedAmount} {conversionResult.toCurrency}
+                                        </p>
+                                        <p class="slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+                                            Exchange Rate: 1 {conversionResult.fromCurrency} = {conversionResult.exchangeRate} {conversionResult.toCurrency}
+                                        </p>
+                                        <p class="slds-text-body_small slds-text-color_weak slds-var-p-top_xx-small provider-label">
+                                            Provider: {conversionResult.providerName}
+                                        </p>
+                                    </div>
+                                </lightning-card>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-tab>
+
+                <!-- History Tab -->
+                <lightning-tab label="History" icon-name="utility:clock">
+                    <div class="slds-var-p-around_medium">
+                        <!-- History Toolbar -->
+                        <div class="history-toolbar slds-grid slds-grid_align-spread slds-grid_vertical-align-end slds-var-p-bottom_small">
+                            <div class="slds-col">
+                                <lightning-combobox
+                                    label="Show"
+                                    value={selectedHistoryLimit}
+                                    options={historyLimitOptions}
+                                    variant="label-inline"
+                                    onchange={handleHistoryLimitChange}
+                                    class="history-limit-select"
+                                ></lightning-combobox>
+                            </div>
+                            <div class="slds-col">
+                                <lightning-button
+                                    label="Refresh"
+                                    icon-name="utility:refresh"
+                                    onclick={loadConversionHistory}
+                                    variant="neutral"
+                                ></lightning-button>
+                            </div>
+                        </div>
+
+                        <!-- History Loading -->
+                        <template lwc:if={isLoadingHistory}>
+                            <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                <lightning-spinner alternative-text="Loading history..." size="medium"></lightning-spinner>
+                            </div>
+                        </template>
+
+                        <!-- History Table -->
+                        <template lwc:if={hasHistory}>
+                            <lightning-datatable
+                                key-field="Id"
+                                data={conversionHistory}
+                                columns={historyColumns}
+                                hide-checkbox-column
+                                show-row-number-column
+                                onrowaction={handleRowAction}
+                            ></lightning-datatable>
+                        </template>
+
+                        <!-- Empty State -->
+                        <template lwc:if={showHistoryEmpty}>
+                            <div class="slds-align_absolute-center slds-var-p-around_large">
+                                <div class="slds-text-align_center">
+                                    <lightning-icon icon-name="utility:info" size="large" class="slds-var-m-bottom_small"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-text-color_weak">No conversion history yet. Convert a currency to see it here.</p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-tab>
+
+                <!-- Stock Watchlist Tab -->
+                <lightning-tab label="Stock Watchlist" icon-name="utility:trending">
+                    <div class="slds-var-p-around_medium">
+                        <c-stock-watchlist></c-stock-watchlist>
+                    </div>
+                </lightning-tab>
+
+            </lightning-tabset>
+        </lightning-card>
+    </div>
+</template>

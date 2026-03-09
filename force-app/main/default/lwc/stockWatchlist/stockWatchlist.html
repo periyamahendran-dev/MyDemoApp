@@ -1,0 +1,250 @@
+<template>
+    <div class="stock-watchlist-container">
+
+        <!-- API Provider Selector Toolbar -->
+        <div class="api-provider-toolbar slds-grid slds-gutters slds-grid_vertical-align-end slds-wrap slds-var-p-bottom_medium">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-var-p-bottom_x-small">
+                <lightning-combobox
+                    label="Market Data Provider"
+                    placeholder="Select an API provider..."
+                    value={selectedProvider}
+                    options={providerOptions}
+                    onchange={handleProviderChange}
+                ></lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12 slds-var-p-bottom_x-small">
+                <div class="provider-status slds-grid slds-grid_vertical-align-center">
+                    <lightning-badge label={activeProviderLabel} class="slds-var-m-right_small"></lightning-badge>
+                    <template lwc:if={lastFetchDisplay}>
+                        <span class="slds-text-body_small slds-text-color_weak">
+                            Last updated: {lastFetchDisplay}
+                        </span>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Watchlists Toolbar -->
+        <div class="saved-watchlist-toolbar slds-grid slds-gutters slds-grid_vertical-align-end slds-wrap slds-var-p-bottom_medium">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-var-p-bottom_x-small">
+                <lightning-combobox
+                    label="Saved Watchlists"
+                    placeholder="Select a watchlist to load..."
+                    value={selectedSavedWatchlistId}
+                    options={savedWatchlistOptions}
+                    onchange={handleSavedWatchlistChange}
+                    disabled={isLoadingWatchlist}
+                ></lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12 slds-var-p-bottom_x-small">
+                <lightning-button-group>
+                    <lightning-button
+                        label="Load"
+                        icon-name="utility:download"
+                        onclick={handleLoadWatchlist}
+                        disabled={isDeleteDisabled}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Delete"
+                        icon-name="utility:delete"
+                        onclick={handleDeleteWatchlist}
+                        disabled={isDeleteDisabled}
+                    ></lightning-button>
+                    <lightning-button
+                        label="New"
+                        icon-name="utility:new"
+                        onclick={handleNewWatchlist}
+                    ></lightning-button>
+                </lightning-button-group>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section slds-var-p-bottom_medium">
+            <div class="slds-grid slds-gutters slds-grid_vertical-align-end slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-var-p-bottom_x-small">
+                    <lightning-input
+                        type="search"
+                        label="Search Stocks"
+                        placeholder="Enter company name or symbol..."
+                        value={searchKeyword}
+                        onchange={handleSearchKeywordChange}
+                        onkeypress={handleSearchKeypress}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-var-p-bottom_x-small">
+                    <lightning-combobox
+                        label="Exchange"
+                        value={selectedExchange}
+                        options={exchangeOptions}
+                        onchange={handleExchangeChange}
+                    ></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-var-p-bottom_x-small">
+                    <lightning-button
+                        label="Search"
+                        variant="brand"
+                        icon-name="utility:search"
+                        onclick={handleSearch}
+                        disabled={isSearchDisabled}
+                        class="full-width-btn"
+                    ></lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Loading -->
+        <template lwc:if={isSearching}>
+            <div class="slds-var-p-around_medium slds-align_absolute-center">
+                <lightning-spinner alternative-text="Searching stocks..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Search Results -->
+        <template lwc:if={hasSearchResults}>
+            <div class="search-results slds-var-p-bottom_medium">
+                <h3 class="slds-text-heading_small slds-var-p-bottom_x-small">Search Results</h3>
+                <template for:each={filteredSearchResults} for:item="result">
+                    <div key={result.symbol} class="search-result-item slds-grid slds-grid_vertical-align-center slds-var-p-around_x-small">
+                        <div class="slds-col slds-grow">
+                            <span class="result-symbol">{result.symbol}</span>
+                            <span class="result-name slds-var-p-left_x-small">{result.name}</span>
+                            <span class="result-meta slds-var-p-left_x-small">{result.region} &bull; {result.currencyCode}</span>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button-icon
+                                icon-name="utility:add"
+                                alternative-text="Add to watchlist"
+                                title="Add to watchlist"
+                                variant="brand"
+                                size="small"
+                                data-symbol={result.symbol}
+                                onclick={handleAddStock}
+                                disabled={isLoadingQuote}
+                            ></lightning-button-icon>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Quote Loading -->
+        <template lwc:if={isLoadingQuote}>
+            <div class="slds-var-p-around_small slds-align_absolute-center">
+                <lightning-spinner alternative-text="Fetching quote..." size="small"></lightning-spinner>
+                <span class="slds-var-p-left_small slds-text-body_small">Fetching stock quote...</span>
+            </div>
+        </template>
+
+        <!-- Watchlist Section -->
+        <div class="watchlist-section slds-var-p-top_small">
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-var-p-bottom_x-small">
+                <h3 class="slds-text-heading_small">{watchlistTitle}</h3>
+                <div>
+                    <template lwc:if={hasWatchlist}>
+                        <lightning-button-group>
+                            <lightning-button
+                                label="Save"
+                                icon-name="utility:save"
+                                onclick={handleOpenSaveModal}
+                                variant="brand"
+                            ></lightning-button>
+                            <lightning-button
+                                label="Refresh All"
+                                icon-name="utility:refresh"
+                                onclick={handleRefreshAll}
+                                disabled={isRefreshing}
+                            ></lightning-button>
+                        </lightning-button-group>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Loading Watchlist -->
+            <template lwc:if={isLoadingWatchlist}>
+                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                    <lightning-spinner alternative-text="Loading watchlist..." size="medium"></lightning-spinner>
+                    <span class="slds-var-p-left_small slds-text-body_small">Loading watchlist with live quotes...</span>
+                </div>
+            </template>
+
+            <!-- Refresh Loading -->
+            <template lwc:if={isRefreshing}>
+                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                    <lightning-spinner alternative-text="Refreshing quotes..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Watchlist Table -->
+            <template lwc:if={hasWatchlist}>
+                <lightning-datatable
+                    key-field="symbol"
+                    data={watchlistWithDisplay}
+                    columns={watchlistColumns}
+                    hide-checkbox-column
+                    onrowaction={handleRowAction}
+                ></lightning-datatable>
+            </template>
+
+            <!-- Empty Watchlist -->
+            <template lwc:if={showWatchlistEmpty}>
+                <div class="slds-align_absolute-center slds-var-p-around_large empty-state">
+                    <div class="slds-text-align_center">
+                        <lightning-icon icon-name="utility:favorite" size="large" class="slds-var-m-bottom_small"></lightning-icon>
+                        <p class="slds-text-body_regular slds-text-color_weak">
+                            Your watchlist is empty. Search for a stock and click <strong>+</strong> to add it, or load a saved watchlist.
+                        </p>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- API Note -->
+        <div class="slds-var-p-top_medium slds-text-align_center">
+            <p class="slds-text-body_small slds-text-color_weak api-note">
+                Data provided by {activeProviderLabel}. Select a different provider above to switch data sources.
+            </p>
+        </div>
+
+        <!-- Save Modal -->
+        <template lwc:if={showSaveModal}>
+            <section class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={handleCloseSaveModal}>
+                            <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate">Save Watchlist</h2>
+                    </div>
+                    <div class="slds-modal__content slds-var-p-around_medium">
+                        <lightning-input
+                            label="Watchlist Name"
+                            value={saveAsName}
+                            placeholder="Enter a name for this watchlist..."
+                            onchange={handleSaveNameChange}
+                            required
+                        ></lightning-input>
+                        <p class="slds-text-body_small slds-text-color_weak slds-var-p-top_small">
+                            This will save {watchlist.length} stock(s) to your watchlist.
+                        </p>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning-button
+                            label="Cancel"
+                            onclick={handleCloseSaveModal}
+                        ></lightning-button>
+                        <lightning-button
+                            label="Save"
+                            variant="brand"
+                            onclick={handleSaveWatchlist}
+                            disabled={isSaveDisabled}
+                            class="slds-var-m-left_x-small"
+                        ></lightning-button>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

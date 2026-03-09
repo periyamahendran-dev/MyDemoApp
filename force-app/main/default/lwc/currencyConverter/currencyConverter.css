@@ -1,0 +1,111 @@
+/* Page wrapper for mascot positioning context */
+.page-wrapper {
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+/* Decorative mascot silhouettes */
+.mascot {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.06;
+    z-index: 0;
+    width: 160px;
+    height: auto;
+}
+
+.mascot-astro {
+    bottom: 1rem;
+    left: 1rem;
+    transform: rotate(-8deg);
+}
+
+.mascot-codey {
+    top: 0.5rem;
+    right: 1rem;
+    transform: rotate(6deg);
+}
+
+.mascot-einstein {
+    bottom: 2rem;
+    right: 4rem;
+    transform: rotate(4deg);
+    width: 140px;
+}
+
+/* Hide mascots on small screens to avoid clutter */
+@media (max-width: 768px) {
+    .mascot {
+        display: none;
+    }
+}
+
+.converter-section {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.swap-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 0.75rem;
+}
+
+.swap-button {
+    margin-top: 1.25rem;
+}
+
+.convert-button {
+    width: 100%;
+}
+
+.convert-button lightning-button {
+    width: 100%;
+}
+
+.convert-button button {
+    width: 100%;
+}
+
+.result-section {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.result-amount {
+    color: var(--slds-g-color-neutral-base-30, #444);
+    font-weight: 400;
+}
+
+.converted-amount {
+    color: var(--slds-g-color-brand-base-50, #0176d3);
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.provider-label {
+    font-style: italic;
+}
+
+.rate-preview {
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rate-preview-text {
+    color: var(--slds-g-color-neutral-base-30, #444);
+    font-size: 0.875rem;
+}
+
+.history-toolbar {
+    border-bottom: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
+    padding-bottom: 0.75rem;
+}
+
+.history-limit-select {
+    max-width: 200px;
+}

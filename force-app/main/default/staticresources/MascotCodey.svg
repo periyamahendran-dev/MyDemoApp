@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="#032D60">
+  <!-- Codey: Salesforce bear mascot silhouette -->
+  <!-- Ears -->
+  <circle cx="62" cy="38" r="24"/>
+  <circle cx="138" cy="38" r="24"/>
+  <circle cx="62" cy="38" r="14" fill="#FFFFFF" opacity="0.15"/>
+  <circle cx="138" cy="38" r="14" fill="#FFFFFF" opacity="0.15"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="72" rx="54" ry="48"/>
+  <!-- Muzzle -->
+  <ellipse cx="100" cy="86" rx="30" ry="22" fill="#FFFFFF" opacity="0.15"/>
+  <!-- Nose -->
+  <ellipse cx="100" cy="78" rx="10" ry="7"/>
+  <!-- Eyes -->
+  <circle cx="78" cy="64" r="7" fill="#FFFFFF" opacity="0.25"/>
+  <circle cx="122" cy="64" r="7" fill="#FFFFFF" opacity="0.25"/>
+  <!-- Body -->
+  <path d="M54 115 Q50 100 60 92 Q75 82 100 82 Q125 82 140 92 Q150 100 146 115 L150 190 Q150 210 135 218 L65 218 Q50 210 50 190Z"/>
+  <!-- Belly -->
+  <ellipse cx="100" cy="165" rx="32" ry="36" fill="#FFFFFF" opacity="0.12"/>
+  <!-- Arms -->
+  <path d="M54 120 Q32 130 28 155 Q26 170 36 174 Q44 176 48 165 L54 145"/>
+  <path d="M146 120 Q168 130 172 155 Q174 170 164 174 Q156 176 152 165 L146 145"/>
+  <!-- Legs -->
+  <ellipse cx="78" cy="232" rx="22" ry="16"/>
+  <ellipse cx="122" cy="232" rx="22" ry="16"/>
+  <path d="M60 218 L58 230 Q60 244 78 244 Q96 244 96 230 L94 218Z"/>
+  <path d="M106 218 L104 230 Q106 244 122 244 Q140 244 142 230 L140 218Z"/>
+  <!-- Hoodie strings -->
+  <line x1="90" y1="108" x2="86" y2="130" stroke="#FFFFFF" stroke-width="2" opacity="0.15"/>
+  <line x1="110" y1="108" x2="114" y2="130" stroke="#FFFFFF" stroke-width="2" opacity="0.15"/>
+</svg>

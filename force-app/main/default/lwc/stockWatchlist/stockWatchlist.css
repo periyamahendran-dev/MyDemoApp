@@ -1,0 +1,76 @@
+.stock-watchlist-container {
+    max-width: 100%;
+}
+
+.api-provider-toolbar {
+    background-color: var(--slds-g-color-brand-base-95, #eef4ff);
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    border: 1px solid var(--slds-g-color-brand-base-80, #c9d8f0);
+}
+
+.provider-status {
+    min-height: 2rem;
+    padding-top: 0.5rem;
+}
+
+.search-section {
+    border-bottom: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
+}
+
+.full-width-btn {
+    width: 100%;
+}
+
+.full-width-btn lightning-button {
+    width: 100%;
+}
+
+.search-results {
+    border-bottom: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    border-bottom: 1px solid var(--slds-g-color-border-base-1, #f0f0f0);
+    transition: background-color 0.15s ease;
+}
+
+.search-result-item:hover {
+    background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.result-symbol {
+    font-weight: 700;
+    color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.result-name {
+    color: var(--slds-g-color-neutral-base-30, #444);
+}
+
+.result-meta {
+    font-size: 0.75rem;
+    color: var(--slds-g-color-neutral-base-50, #706e6b);
+}
+
+.empty-state {
+    min-height: 120px;
+}
+
+.api-note {
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.saved-watchlist-toolbar {
+    background-color: var(--slds-g-color-neutral-base-95, #f7f7f7);
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    border: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
+}

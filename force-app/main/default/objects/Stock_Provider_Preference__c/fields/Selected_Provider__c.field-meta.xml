@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Selected_Provider__c</fullName>
+    <defaultValue>&apos;Alpha_Vantage&apos;</defaultValue>
+    <description>The developer name of the currently selected stock quote API provider</description>
+    <externalId>false</externalId>
+    <label>Selected Provider</label>
+    <length>100</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

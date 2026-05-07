@@ -137,62 +137,64 @@
                                 </lightning-card>
                             </div>
                         </template>
-                    </div>
-                </lightning-tab>
 
-                <!-- History Tab -->
-                <lightning-tab label="History" icon-name="utility:clock">
-                    <div class="slds-var-p-around_medium">
-                        <!-- History Toolbar -->
-                        <div class="history-toolbar slds-grid slds-grid_align-spread slds-grid_vertical-align-end slds-var-p-bottom_small">
-                            <div class="slds-col">
-                                <lightning-combobox
-                                    label="Show"
-                                    value={selectedHistoryLimit}
-                                    options={historyLimitOptions}
-                                    variant="label-inline"
-                                    onchange={handleHistoryLimitChange}
-                                    class="history-limit-select"
-                                ></lightning-combobox>
-                            </div>
-                            <div class="slds-col">
-                                <lightning-button
-                                    label="Refresh"
-                                    icon-name="utility:refresh"
-                                    onclick={loadConversionHistory}
-                                    variant="neutral"
-                                ></lightning-button>
-                            </div>
+                        <!-- Conversion History (collapsible) -->
+                        <div class="slds-var-p-top_medium">
+                            <lightning-accordion allow-multiple-sections-open active-section-name={activeSections} onsectiontoggle={handleAccordionToggle}>
+                                <lightning-accordion-section name="history" label="Conversion History">
+                                    <!-- History Toolbar -->
+                                    <div class="history-toolbar slds-grid slds-grid_align-spread slds-grid_vertical-align-end slds-var-p-bottom_small">
+                                        <div class="slds-col">
+                                            <lightning-combobox
+                                                label="Show"
+                                                value={selectedHistoryLimit}
+                                                options={historyLimitOptions}
+                                                variant="label-inline"
+                                                onchange={handleHistoryLimitChange}
+                                                class="history-limit-select"
+                                            ></lightning-combobox>
+                                        </div>
+                                        <div class="slds-col">
+                                            <lightning-button
+                                                label="Refresh"
+                                                icon-name="utility:refresh"
+                                                onclick={loadConversionHistory}
+                                                variant="neutral"
+                                            ></lightning-button>
+                                        </div>
+                                    </div>
+
+                                    <!-- History Loading -->
+                                    <template lwc:if={isLoadingHistory}>
+                                        <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                            <lightning-spinner alternative-text="Loading history..." size="medium"></lightning-spinner>
+                                        </div>
+                                    </template>
+
+                                    <!-- History Table -->
+                                    <template lwc:if={hasHistory}>
+                                        <lightning-datatable
+                                            key-field="Id"
+                                            data={conversionHistory}
+                                            columns={historyColumns}
+                                            hide-checkbox-column
+                                            show-row-number-column
+                                            onrowaction={handleRowAction}
+                                        ></lightning-datatable>
+                                    </template>
+
+                                    <!-- Empty State -->
+                                    <template lwc:if={showHistoryEmpty}>
+                                        <div class="slds-align_absolute-center slds-var-p-around_large">
+                                            <div class="slds-text-align_center">
+                                                <lightning-icon icon-name="utility:info" size="large" class="slds-var-m-bottom_small"></lightning-icon>
+                                                <p class="slds-text-body_regular slds-text-color_weak">No conversion history yet. Convert a currency to see it here.</p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </lightning-accordion-section>
+                            </lightning-accordion>
                         </div>
-
-                        <!-- History Loading -->
-                        <template lwc:if={isLoadingHistory}>
-                            <div class="slds-var-p-around_medium slds-align_absolute-center">
-                                <lightning-spinner alternative-text="Loading history..." size="medium"></lightning-spinner>
-                            </div>
-                        </template>
-
-                        <!-- History Table -->
-                        <template lwc:if={hasHistory}>
-                            <lightning-datatable
-                                key-field="Id"
-                                data={conversionHistory}
-                                columns={historyColumns}
-                                hide-checkbox-column
-                                show-row-number-column
-                                onrowaction={handleRowAction}
-                            ></lightning-datatable>
-                        </template>
-
-                        <!-- Empty State -->
-                        <template lwc:if={showHistoryEmpty}>
-                            <div class="slds-align_absolute-center slds-var-p-around_large">
-                                <div class="slds-text-align_center">
-                                    <lightning-icon icon-name="utility:info" size="large" class="slds-var-m-bottom_small"></lightning-icon>
-                                    <p class="slds-text-body_regular slds-text-color_weak">No conversion history yet. Convert a currency to see it here.</p>
-                                </div>
-                            </div>
-                        </template>
                     </div>
                 </lightning-tab>
 

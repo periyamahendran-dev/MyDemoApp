@@ -105,17 +105,42 @@ describe("c-currency-converter", () => {
         expect(card).not.toBeNull();
     });
 
-    it("renders tabset with Converter, History, and Stock Watchlist tabs", async () => {
+    it("renders tabset with Converter and Stock Watchlist tabs (no History tab)", async () => {
         const element = await createComponent();
 
         const tabset = element.shadowRoot.querySelector("lightning-tabset");
         expect(tabset).not.toBeNull();
 
         const tabs = element.shadowRoot.querySelectorAll("lightning-tab");
-        expect(tabs).toHaveLength(3);
+        expect(tabs).toHaveLength(2);
         expect(tabs[0].label).toBe("Converter");
-        expect(tabs[1].label).toBe("History");
-        expect(tabs[2].label).toBe("Stock Watchlist");
+        expect(tabs[1].label).toBe("Stock Watchlist");
+    });
+
+    it("does not render a standalone History tab", async () => {
+        const element = await createComponent();
+
+        const tabs = element.shadowRoot.querySelectorAll("lightning-tab");
+        const historyTab = Array.from(tabs).find((t) => t.label === "History");
+        expect(historyTab).toBeUndefined();
+    });
+
+    it("renders conversion history inside an accordion section in Converter tab", async () => {
+        const element = await createComponent();
+
+        const accordion = element.shadowRoot.querySelector("lightning-accordion");
+        expect(accordion).not.toBeNull();
+
+        const section = element.shadowRoot.querySelector("lightning-accordion-section");
+        expect(section).not.toBeNull();
+        expect(section.label).toBe("Conversion History");
+    });
+
+    it("accordion is collapsed by default", async () => {
+        const element = await createComponent();
+
+        const accordion = element.shadowRoot.querySelector("lightning-accordion");
+        expect(accordion.activeSectionName).toEqual([]);
     });
 
     it("renders stock watchlist child component in third tab", async () => {
@@ -309,12 +334,12 @@ describe("c-currency-converter", () => {
 
     it("loads history with default limit of 10 on init", async () => {
         getConversionHistory.mockResolvedValue([]);
-        const element = await createComponent();
+        await createComponent();
 
         expect(getConversionHistory).toHaveBeenCalledWith({ recordLimit: 10 });
     });
 
-    it("renders history limit dropdown in History tab", async () => {
+    it("renders history limit dropdown in accordion section", async () => {
         const element = await createComponent(true);
 
         const comboboxes = element.shadowRoot.querySelectorAll("lightning-combobox");
@@ -341,7 +366,7 @@ describe("c-currency-converter", () => {
         expect(getConversionHistory).toHaveBeenCalledWith({ recordLimit: 25 });
     });
 
-    it("shows datatable in history tab when history exists", async () => {
+    it("shows datatable in accordion section when history exists", async () => {
         const element = await createComponent(true);
 
         const datatable = element.shadowRoot.querySelector("lightning-datatable");

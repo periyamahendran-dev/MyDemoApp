@@ -85,6 +85,7 @@ export default class CurrencyConverter extends LightningElement {
     @track conversionResult = null;
     @track currencyOptions = [];
     @track conversionHistory = [];
+    @track activeSections = [];
 
     providerOptions = PROVIDER_OPTIONS;
     historyColumns = HISTORY_COLUMNS;
@@ -169,6 +170,10 @@ export default class CurrencyConverter extends LightningElement {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(this.conversionResult.convertedAmount);
+    }
+
+    handleAccordionToggle(event) {
+        this.activeSections = event.detail.openSections;
     }
 
     handleAmountChange(event) {

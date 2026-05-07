@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>Currency Converter User</label>
-    <description>Grants access to the Currency Converter application and its data.</description>
+    <label>FinTimes User</label>
+    <description
+  >Grants access to the Currency Converter application and its data.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <applicationVisibilities>
         <application>Currency_Converter</application>

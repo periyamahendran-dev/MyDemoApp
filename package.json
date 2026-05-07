@@ -1,8 +1,8 @@
 {
-  "name": "salesforce-app",
+  "name": "fintimes",
   "private": true,
   "version": "1.0.0",
-  "description": "Salesforce App",
+  "description": "FinTimes - Financial Tools App",
   "scripts": {
     "lint": "eslint **/{aura,lwc}/**/*.js",
     "test": "npm run test:unit",
@@ -38,7 +38,7 @@
       "eslint"
     ],
     "**/lwc/**": [
-        "sfdx-lwc-jest -- --bail --findRelatedTests --passWithNoTests"
+      "sfdx-lwc-jest -- --bail --findRelatedTests --passWithNoTests"
     ]
   }
 }
